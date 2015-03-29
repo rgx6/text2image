@@ -1,0 +1,29 @@
+.row {
+  margin-top: 20px;
+}
+
+#fontsizebadge {
+  margin-left: 20px;
+}
+
+textarea {
+  width: 100%;
+  height: 200px;
+  padding: 20px;
+}
+
+span.arrow {
+  font-size: 25px;
+  line-height: 25px;
+  margin: 0 30px;
+}
+
+.image {
+  background-color: #fff;
+  border: solid 2px #878787;
+  border-radius: 3px;
+}
+
+.footer a {
+  margin-left: 10px;
+}

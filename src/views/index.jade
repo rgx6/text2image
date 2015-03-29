@@ -1,0 +1,55 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="Content-Language", content="ja")
+    meta(name="robots", content="noindex, nofollow")
+    meta(name="keywords", content="テキスト,画像,ツイート,tweet,ツイッター,twitter")
+    meta(name="description", content="テキストを画像にしてツイート")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    title="テキストを画像にしてツイート"
+    // link(rel="icon", href="/images/favicon.png", type="image/png")
+    link(type="text/css", rel="stylesheet", href="/stylesheets/style.css")
+    script(type="application/javascript", src="/javascripts/client.js", defer)
+  body
+    div.container-fluid
+      div.jumbotron
+        h1 テキストを画像にしてツイート
+      div.row
+        label.col-xs-12 フォント
+        div.col-xs-12.col-sm-6
+          select#fontfamily.form-control(size="5")
+      div.row
+        label.col-xs-12 フォントサイズ
+        div.col-xs-12
+          input#fontsize(type="number")
+          span#fontsizebadge
+      div.row
+        label.col-xs-12 タブ幅
+        div.col-xs-12
+          label.radio-inline
+            input(type="radio", name="tab", value="  ")
+            | 2
+          label.radio-inline
+            input(type="radio", name="tab", value="    ", checked="checked")
+            | 4
+          label.radio-inline
+            input(type="radio", name="tab", value="        ")
+            | 8
+      div.row
+        label.col-xs-12 テキスト
+        div.col-xs-12
+          textarea#text(wrap="off")
+      div.row.text-center
+        button#preview.btn.btn-lg.btn-primary(type="button") プレビュー
+        span.arrow →
+        button#tweetUpper.btn.btn-lg.btn-primary(type="button", disabled="disabled") ツイート
+      div.row
+        label.col-xs-12 プレビュー
+        div.col-xs-12
+          canvas#canvas.image(width="40px", height="40px")
+      div.row.text-center
+        button#tweetLower.btn.btn-lg.btn-primary(type="button", disabled="disabled") ツイート
+      div.row.text-center.footer
+        p &copy; 2014
+          a(href="https://twitter.com/rgx_6", target="_blank") @rgx_6

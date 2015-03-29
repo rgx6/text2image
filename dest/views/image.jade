@@ -1,0 +1,26 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="Content-Language", content="ja")
+    meta(name="robots", content="noindex, nofollow")
+    meta(name="keywords", content="テキスト,画像,ツイート,tweet,ツイッター,twitter")
+    meta(name="description", content="テキストを画像にしてツイート")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    title="テキストを画像にしてツイート"
+    // link(rel="icon", href="/images/favicon.png", type="image/png")
+    link(type="text/css", rel="stylesheet", href="/stylesheets/style.css")
+  body
+    nav.navbar.navbar-default(role="navigation")
+      div.container-fluid
+        div.navbar-header
+          a.navbar-brand(href="/") テキストを画像にしてツイート
+    div.container-fluid
+      div.row
+        label.col-xs-12 画像
+        div.col-xs-12
+          img.image(src="/log/#{fileName}.png", alt="")
+      div.row
+        label.col-xs-12 テキスト
+        div.col-xs-12
+          textarea #{text}
