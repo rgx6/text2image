@@ -76,9 +76,23 @@ var postImage = function (req, res) {
     ]).then(function () {
         var T = new Twit(config);
         T.post('media/upload', { media: png }, function (err, data, response) {
+            if (err) {
+                logger.error('media/upload ' + fileName, err);
+                res.send(500);
+                return;
+            }
+
+            logger.info('media/upload ' + fileName, data);
             var mediaIdStr = data.media_id_string;
             var params = { status: '', media_ids: [mediaIdStr] };
             T.post('statuses/update', params, function (err, data, response) {
+                if (err) {
+                    logger.error('statuses/update ' + fileName + ' ' + err.code, err);
+                    res.status(500).json({ errorCode: err.code });
+                    return;
+                }
+
+                logger.info('statuses/update ' + fileName, data.entities.media[0]);
                 var url = data.entities.media[0].display_url;
                 // hack : urlをdbに記録
                 res.status(200).json({ fileName: fileName, picUrl: url });

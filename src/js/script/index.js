@@ -232,16 +232,33 @@
             data:        JSON.stringify({ png: png, thumbPng: thumbPng, text: text }),
             dataType:    'json',
             cache:       false,
+            timeout:     30 * 1000,
             success: function (data) {
                 var imageDataUrl = imageDataUrlBase.replace('{fileName}', data.fileName);
                 tweetUrl = tweetUrlBase
                         .replace('{picUrl}', data.picUrl)
                         .replace('{imageDataUrl}', encodeURI(imageDataUrl));
-                $.unblockUI();
                 window.open(tweetUrl);
             },
-            error: function () {
-                alert('エラー');
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                var res = parseJson(XMLHttpRequest.responseText);
+                if (res && res.errorCode) {
+                    if (res.errorCode === 324) {
+                        alert('エラーが発生しました。\n\n'
+                              + '画像のサイズが大きすぎるかもしれません。\n'
+                              + 'テキストを減らすか、フォントを小さくしてみてください。');
+                    } else {
+                        alert('エラーが発生しました。\n\n'
+                              + 'error code : ' + res.errorCode);
+                    }
+                } else if (textStatus === 'timeout') {
+                    alert('タイムアウトしました。');
+                } else {
+                    alert('エラーが発生しました。\n\n'
+                          + '少し待ってからもう1度試してみてください。');
+                }
+            },
+            complete: function () {
                 $.unblockUI();
             }
         });
@@ -341,8 +358,23 @@
 
     function startBlockUI () {
         'use strict';
-        console.log('startBlockUI');
+        // console.log('startBlockUI');
 
         $.blockUI({ message: '<h3><img src="/images/spinner.gif" />  処理中</h3>' });
+    }
+
+    function parseJson (data) {
+        'use strict';
+        // console.log('parseJson');
+
+        var json = null;
+
+        try {
+            json = JSON.parse(data);
+        } catch (e) {
+            // do nothing
+        }
+
+        return json;
     }
 })();
