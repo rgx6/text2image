@@ -256,7 +256,7 @@
                 var imageDataUrl = imageDataUrlBase.replace('{fileName}', data.fileName);
                 tweetUrl = tweetUrlBase
                         .replace('{picUrl}', data.picUrl)
-                        .replace('{imageDataUrl}', encodeURI(imageDataUrl));
+                        .replace('{imageDataUrl}', encodeURIComponent(imageDataUrl));
                 window.open(tweetUrl);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
