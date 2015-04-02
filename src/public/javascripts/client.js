@@ -1014,6 +1014,10 @@ var Detector = function() {
         // タブ文字を処理
         var tabWidth = $('input[name="tab"]:checked').val() - 0;
         $('#text').val($('#text').val().replace(/\t/g, ' '.repeat(tabWidth)));
+
+        // 先頭と末尾の空行を削除
+        $('#text').val($('#text').val().replace(/^\s*\r?\n/, ''));
+        $('#text').val($('#text').val().replace(/\s+$/, ''));
     });
 
     $('#text').on('change', function () {
@@ -1033,13 +1037,9 @@ var Detector = function() {
 
         // テキストを前処理
         lines = $('#text').val().replace(/\r?\n/g, '\n').split('\n');
-        var flag = false;
         for (var l = lines.length - 1; 0 <= l; l--) {
             // 行末の空白文字を削除
             lines[l] = lines[l].replace(/\s+$/, '');
-            // 末尾の空行を削除
-            if (!flag && lines[l] === '') lines.splice(l, 1);
-            else flag = true;
         }
 
         // 画像の幅を計算
