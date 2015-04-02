@@ -136,13 +136,32 @@
         disableTweetButton();
     });
 
+    $('#text').on('keydown', function (e) {
+        'use strict';
+        // console.log('#text keydown');
+
+        if (e.keyCode === 9) {
+            e.preventDefault();
+            var elem = e.target;
+            var val = elem.value;
+            var pos = elem.selectionStart;
+            var i;
+            for (i = pos - 1; 0 <= i; i--) { if (val[i].match(/[\r\n]/)) break; }
+            var indexFromLineHead = pos - i - 1;
+            var tabWidth = $('input[name="tab"]:checked').val() - 0;
+            var indent = tabWidth - indexFromLineHead % tabWidth;
+            elem.value = val.substr(0, pos) + ' '.repeat(indent) + val.substr(pos, val.length);
+            elem.setSelectionRange(pos + indent, pos + indent);
+        }
+    });
+
     $('#text').on('blur', function () {
         'use strict';
         // console.log('#text blur');
 
         // タブ文字を処理
-        var tab = $('input[name="tab"]:checked').val();
-        $('#text').val($('#text').val().replace(/\t/g, tab));
+        var tabWidth = $('input[name="tab"]:checked').val() - 0;
+        $('#text').val($('#text').val().replace(/\t/g, ' '.repeat(tabWidth)));
     });
 
     $('#text').on('change', function () {
