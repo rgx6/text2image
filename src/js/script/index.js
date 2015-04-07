@@ -18,6 +18,10 @@
     var FONT_SIZE_MAX = 50;
     var FONT_SIZE_DEFAULT = 16;
 
+    var FONT_DEFAULT = 'ＭＳ Ｐゴシック';
+
+    var TAB_WIDTH_DEFAULT = 4;
+
     var canvas = $('#canvas').get(0);
     var context = canvas.getContext('2d');
 
@@ -97,17 +101,26 @@
 
     // init
 
+    var defaultFontSize = localStorage.getItem('lastFontSize') ?
+            localStorage.getItem('lastFontSize') - 0 :
+            FONT_SIZE_DEFAULT;
+
     $('#fontsize').slider({
         min:     FONT_SIZE_MIN,
         max:     FONT_SIZE_MAX,
         step:    1,
-        value:   FONT_SIZE_DEFAULT,
+        value:   defaultFontSize,
         tooltip: 'hide',
     });
-    $('#fontsize').val(FONT_SIZE_DEFAULT);
-    $('#fontsizebadge').text(FONT_SIZE_DEFAULT + 'px');
+    $('#fontsize').val(defaultFontSize);
+    $('#fontsizebadge').text(defaultFontSize + 'px');
 
     initFontFamily();
+
+    var defaultTabWidth = localStorage.getItem('lastTabWidth') ?
+            localStorage.getItem('lastTabWidth') :
+            TAB_WIDTH_DEFAULT;
+    $('input[name="tab"][value="' + defaultTabWidth + '"]').attr('checked', 'checked');
 
 
     // event
@@ -173,6 +186,13 @@
         // console.log('#text change');
 
         disableTweetButton();
+    });
+
+    $('input[name="tab"]').on('change', function () {
+        'use strict';
+        // console.log('input[name="tab"] change');
+
+        localStorage.setItem('lastTabWidth', $('input[name="tab"]:checked').val() - 0);
     });
 
     $('#preview').on('click', function () {
@@ -290,17 +310,17 @@
         'use strict';
         // console.log('initFontFamily');
 
-        // hack : 前回選択したフォントを記憶しておきたい
+        var defaultFont = localStorage.getItem('lastSelectedFont') ?
+                localStorage.getItem('lastSelectedFont') :
+                FONT_DEFAULT;
 
-        var isFirst = true;
         var detective = new Detector();
         fontlist.forEach(function (group) {
             $('#fontfamily').append('<optgroup label="' + group.type + '">');
             group.fonts.forEach(function (font) {
                 if (detective.detect(font)) {
-                    if (isFirst) {
+                    if (font === defaultFont) {
                         $('#fontfamily').append('<option value="' + font + '" selected="selected">' + font + '</option>');
-                        isFirst = false;
                     } else {
                         $('#fontfamily').append('<option value="' + font + '">' + font + '</option>');
                     }
@@ -325,6 +345,9 @@
         $('#text').css('font-family', fontFamily);
         $('#text').css('font-size', fontSize + 'px');
         $('#text').css('line-height', fontSize + fontmargin + 'px');
+
+        localStorage.setItem('lastSelectedFont', fontFamily);
+        localStorage.setItem('lastFontSize', fontSize);
     }
 
     function drawWord (text, x, y) {
