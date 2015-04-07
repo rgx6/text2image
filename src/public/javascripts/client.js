@@ -1003,7 +1003,7 @@ var Detector = function() {
 
     $('#text').on('keydown', function (e) {
         'use strict';
-        // console.log('#text keydown');
+        // console.log('#text keydown', e.keyCode);
 
         if (e.keyCode === 9) {
             e.preventDefault();
@@ -1011,7 +1011,7 @@ var Detector = function() {
             var val = elem.value;
             var pos = elem.selectionStart;
             var i;
-            for (i = pos - 1; 0 <= i; i--) { if (val[i].match(/[\r\n]/)) break; }
+            for (i = pos - 1; 0 <= i; i--) { if (val[i] && val[i].match(/[\r\n]/)) break; }
             var indexFromLineHead = pos - i - 1;
             var tabWidth = $('input[name="tab"]:checked').val() - 0;
             var indent = tabWidth - indexFromLineHead % tabWidth;
@@ -1271,4 +1271,15 @@ var Detector = function() {
 
         return json;
     }
+
+    // for IE
+    if (!String.prototype.repeat) String.prototype.repeat = function (times) {
+        'use strict';
+        // console.log('repeat');
+
+        var out = '';
+        for (var i = 0; i < times; i++) out += this;
+
+        return out;
+    };
 })();
