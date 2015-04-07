@@ -94,8 +94,11 @@ var postImage = function (req, res) {
 
                 logger.info('statuses/update ' + fileName, data.entities.media[0]);
                 var url = data.entities.media[0].display_url;
-                // hack : urlをdbに記録
+
                 res.status(200).json({ fileName: fileName, picUrl: url });
+
+                updateDB(fileName, url);
+
                 return;
             });
         });
@@ -155,6 +158,43 @@ function insertDB (fileName, text) {
             if (err) {
                 logger.error(err);
                 reject(new Error('insert db failed'));
+                return;
+            }
+
+            fulfill();
+            return;
+        });
+    });
+}
+
+function updateDB (fileName, url) {
+    'use strict';
+    logger.debug('updateDB');
+
+    return new Promise(function (fulfill, reject) {
+        if (!fileName || !url) {
+            logger.error('update db failed');
+            reject(new Error('bad param'));
+            return;
+        }
+
+        db.ImageData.findOneAndUpdate({
+            fileName: fileName
+        }, {
+            $set: {
+                imageUrl:  url,
+                updatedTime: new Date(),
+            }
+        }, function (err, data) {
+            if (err) {
+                logger.error(err);
+                reject(new Error(err));
+                return;
+            }
+
+            if (data === null) {
+                logger.error('not registered fileName : ' + fileName);
+                reject(new Error('not registered fileName'));
                 return;
             }
 
