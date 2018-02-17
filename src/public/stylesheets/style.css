@@ -163,6 +163,10 @@ span.arrow {
   border-radius: 3px;
 }
 
+#author {
+  display: none;
+}
+
 .footer a {
   margin-left: 10px;
 }

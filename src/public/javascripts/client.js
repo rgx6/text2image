@@ -960,6 +960,8 @@ var Detector = function() {
             height: 375,
             x: 382,
             y: 218,
+            authorName: '@TheCoolMuseum',
+            authorLink: 'https://twitter.com/TheCoolMuseum',
         },
     ];
 
@@ -1104,9 +1106,13 @@ var Detector = function() {
         if (background) {
             $('#canvas').attr('width', background.width);
             $('#canvas').attr('height', background.height);
+            $('#author').show();
+            $('#authorLink').text(background.authorName);
+            $('#authorLink').attr('href', background.authorLink);
         } else {
             $('#canvas').attr('width', textWidth + 2 * CANVAS_MARGIN);
             $('#canvas').attr('height', textHeight + 2 * CANVAS_MARGIN);
+            $('#author').hide();
         }
 
         // 背景描画

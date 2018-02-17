@@ -9,8 +9,8 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1")
     title="テキストを画像にしてツイート"
     // link(rel="icon", href="/images/favicon.png", type="image/png")
-    link(type="text/css", rel="stylesheet", href="/stylesheets/style.css")
-    script(type="application/javascript", src="/javascripts/client.js?d=20180217", defer)
+    link(type="text/css", rel="stylesheet", href="/stylesheets/style.css?d=20180217")
+    script(type="application/javascript", src="/javascripts/client.js?d=20180217_2", defer)
   body
     div.container-fluid
       div.jumbotron
@@ -57,6 +57,9 @@ html
         label.col-xs-12 プレビュー
         div.col-xs-12
           canvas#canvas.image(width="40px", height="40px")
+          div#author
+            label 画像提供：
+            a#authorLink(target="_blank")
       div.row.text-center
         button#tweetLower.btn.btn-lg.btn-primary(type="button", disabled="disabled") ツイート
       div.row.text-center.footer
