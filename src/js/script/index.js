@@ -22,6 +22,8 @@
 
     var TAB_WIDTH_DEFAULT = 4;
 
+    var BACKGROUND_DEFAULT = 0;
+
     var canvas = $('#canvas').get(0);
     var context = canvas.getContext('2d');
 
@@ -98,6 +100,17 @@
         }
     ];
 
+    var backgroundList = [
+        null,
+        {
+            src: '/images/background_01.jpg',
+            width: 718,
+            height: 375,
+            x: 382,
+            y: 218,
+        },
+    ];
+
 
     // init
 
@@ -122,6 +135,10 @@
             TAB_WIDTH_DEFAULT;
     $('input[name="tab"][value="' + defaultTabWidth + '"]').attr('checked', 'checked');
 
+    var defaultBackground = localStorage.getItem('lastBackground') ?
+            localStorage.getItem('lastBackground') :
+            BACKGROUND_DEFAULT;
+    $('input[name="background"][value="' + defaultBackground + '"]').attr('checked', 'checked');
 
     // event
 
@@ -195,6 +212,13 @@
         localStorage.setItem('lastTabWidth', $('input[name="tab"]:checked').val() - 0);
     });
 
+    $('input[name="background"]').on('change', function () {
+        'use strict';
+        // console.log('input[name="background"] change');
+
+        localStorage.setItem('lastBackground', $('input[name="background"]:checked').val() - 0);
+    });
+
     $('#preview').on('click', function () {
         'use strict';
         // console.log('#preview click');
@@ -210,43 +234,47 @@
             lines[l] = lines[l].replace(/\s+$/, '');
         }
 
-        // 画像の幅を計算
+        // テキスト部分の幅を計算
         context.font = font;
-        var width = 0;
+        var textWidth = 0;
         for (var i = 0; i < lines.length; i++) {
             var metrics = context.measureText(lines[i]);
-            if (width < metrics.width) width = metrics.width;
+            if (textWidth < metrics.width) textWidth = metrics.width;
         }
 
-        // 画像の高さを計算
+        // テキスト部分の高さを計算
         var lineHeight = $('#text').css('line-height').replace('px', '') - 0;
-        var height = lineHeight * lines.length;
+        var textHeight = lineHeight * lines.length;
 
         // 画像のサイズを設定
-        $('#canvas').attr('width', width + 2 * CANVAS_MARGIN);
-        $('#canvas').attr('height', height + 2 * CANVAS_MARGIN);
+        var background = backgroundList[($('input[name="background"]:checked').val() - 0)];
 
-        // 背景描画 todo : param
+        if (background) {
+            $('#canvas').attr('width', background.width);
+            $('#canvas').attr('height', background.height);
+        } else {
+            $('#canvas').attr('width', textWidth + 2 * CANVAS_MARGIN);
+            $('#canvas').attr('height', textHeight + 2 * CANVAS_MARGIN);
+        }
+
+        // 背景描画
         context.fillStyle = '#fff';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 描画context設定
-        context.font = font;
-        context.textBaseline = 'top';
-        // todo : param backgroundも
-        context.fillStyle = '#000';
+        if (background) {
+            var image = new Image();
+            image.src = background.src;
+            image.onload = function () {
+                context.drawImage(image, 0, 0);
 
-        // テキスト描画
-        for (var j = 0; j < lines.length; j++) {
-            drawWord(lines[j], 0, j * lineHeight);
+                var offsetX = background.x - Math.round(textWidth / 2);
+                var offsetY = background.y - Math.round(textHeight / 2);
+
+                drawText(lineHeight, offsetX, offsetY);
+            };
+        } else {
+            drawText(lineHeight, CANVAS_MARGIN, CANVAS_MARGIN);
         }
-
-        if (0 < lines.length) {
-            enableTweetButton();
-            $('html, body').animate({ scrollTop: $('#tweetUpper').offset().top });
-        }
-
-        $.unblockUI();
     });
 
     $('#tweetUpper, #tweetLower').on('click', function () {
@@ -350,11 +378,24 @@
         localStorage.setItem('lastFontSize', fontSize);
     }
 
-    function drawWord (text, x, y) {
+    function drawText(lineHeight, offsetX, offsetY) {
         'use strict';
-        // console.log('drawWord ', text, x, y);
 
-        context.fillText(text, x + CANVAS_MARGIN, y + CANVAS_MARGIN);
+        context.font = font;
+        context.textBaseline = 'top';
+        context.fillStyle = '#000';
+
+        // テキスト描画
+        for (var j = 0; j < lines.length; j++) {
+            context.fillText(lines[j], offsetX + 0, offsetY + j * lineHeight);
+        }
+
+        if (0 < lines.length) {
+            enableTweetButton();
+            $('html, body').animate({ scrollTop: $('#tweetUpper').offset().top });
+        }
+
+        $.unblockUI();
     }
 
     function getThumbnailPng () {

@@ -16,6 +16,15 @@ html
       div.jumbotron
         h1 テキストを画像にしてツイート
       div.row
+        label.col-xs-12 背景
+        div.col-xs-12
+          label.radio-inline
+            input(type="radio", name="background", value="0")
+            | なし
+          label.radio-inline
+            input(type="radio", name="background", value="1")
+            | すたちゅー
+      div.row
         label.col-xs-12 フォント
         div.col-xs-12.col-sm-6
           select#fontfamily.form-control(size="5")
