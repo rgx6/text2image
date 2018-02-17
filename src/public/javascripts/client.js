@@ -876,6 +876,8 @@ var Detector = function() {
 
     var BACKGROUND_DEFAULT = 0;
 
+    var ADDITIONAL_FONT_DEFAULT = [];
+
     var canvas = $('#canvas').get(0);
     var context = canvas.getContext('2d');
 
@@ -982,8 +984,6 @@ var Detector = function() {
     $('#fontsize').val(defaultFontSize);
     $('#fontsizebadge').text(defaultFontSize + 'px');
 
-    initFontFamily();
-
     var defaultTabWidth = localStorage.getItem('lastTabWidth') ?
             localStorage.getItem('lastTabWidth') :
             TAB_WIDTH_DEFAULT;
@@ -994,6 +994,13 @@ var Detector = function() {
             BACKGROUND_DEFAULT;
     $('input[name="background"][value="' + defaultBackground + '"]').attr('checked', 'checked');
 
+    var additionalFontList = localStorage.getItem('additionalFontList') ?
+            JSON.parse(localStorage.getItem('additionalFontList')) :
+            ADDITIONAL_FONT_DEFAULT;
+
+    initFontFamily();
+
+
     // event
 
     $('#fontfamily').on('change', function () {
@@ -1002,6 +1009,12 @@ var Detector = function() {
 
         setFont();
         disableTweetButton();
+    });
+
+    $('#fontfamily').on('click', '#addFont option', function (e) {
+        'use strict';
+
+        e.stopPropagation();
     });
 
     $('#fontsize').on('slide', function (e) {
@@ -1071,6 +1084,42 @@ var Detector = function() {
         // console.log('input[name="background"] change');
 
         localStorage.setItem('lastBackground', $('input[name="background"]:checked').val() - 0);
+    });
+
+    $('#fontfamily').on('click', '#addFont', function () {
+        'use strict';
+
+        var font = window.prompt('フォント名を入力してください。', '');
+
+        if (font == null) return;
+
+        font = font.trim();
+
+        if (font === '') return;
+
+        $('#addFont').append('<option value="' + font + '" selected="selected">' + font + '</option>');
+
+        additionalFontList.push(font);
+        localStorage.setItem('additionalFontList', JSON.stringify(additionalFontList));
+
+        setFont();
+        disableTweetButton();
+    });
+
+    $('#fontfamily').on('click', '#deleteFont', function () {
+        'use strict';
+
+        var result = window.confirm('追加したフォントを削除します。');
+
+        if (!result) return;
+
+        $('#addFont').empty();
+
+        additionalFontList = [];
+        localStorage.setItem('additionalFontList', JSON.stringify(additionalFontList));
+
+        setFont();
+        disableTweetButton();
     });
 
     $('#preview').on('click', function () {
@@ -1201,19 +1250,34 @@ var Detector = function() {
                 FONT_DEFAULT;
 
         var detective = new Detector();
+
         fontlist.forEach(function (group) {
-            $('#fontfamily').append('<optgroup label="' + group.type + '">');
+            var optgroup = $('<optgroup label="' + group.type + '"></optgroup>');
+
             group.fonts.forEach(function (font) {
                 if (detective.detect(font)) {
                     if (font === defaultFont) {
-                        $('#fontfamily').append('<option value="' + font + '" selected="selected">' + font + '</option>');
+                        optgroup.append('<option value="' + font + '" selected="selected">' + font + '</option>');
                     } else {
-                        $('#fontfamily').append('<option value="' + font + '">' + font + '</option>');
+                        optgroup.append('<option value="' + font + '">' + font + '</option>');
                     }
                 }
             });
-            $('#fontfamily').append('</optgroup>');
+
+            $('#fontfamily').append(optgroup);
         });
+
+        $('#fontfamily').append('<optgroup id="addFont" label="フォントを追加"></optgroup>');
+
+        additionalFontList.forEach(function (font) {
+            if (font === defaultFont) {
+                $('#addFont').append('<option value="' + font + '" selected="selected">' + font + '</option>');
+            } else {
+                $('#addFont').append('<option value="' + font + '">' + font + '</option>');
+            }
+        });
+
+        $('#fontfamily').append('<optgroup id="deleteFont" label="フォントを削除"></optgroup>');
 
         setFont();
     }
