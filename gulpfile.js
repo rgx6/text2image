@@ -5,36 +5,41 @@ var minifyCSS   = require('gulp-minify-css');
 var del         = require('del');
 var browserSync = require('browser-sync');
 
-gulp.task('js', function () {
+gulp.task('js', function (done) {
     // todo : clean
     gulp.src(['src/js/lib/*.js', 'src/js/script/*.js'])
         .pipe(concat('client.js'))
         .pipe(gulp.dest('src/public/javascripts'));
+    done();
 });
 
-gulp.task('css', function () {
+gulp.task('css', function (done) {
     // todo : clean
     gulp.src('src/css/**/*.css')
         .pipe(concat('style.css'))
         .pipe(gulp.dest('src/public/stylesheets'));
+    done();
 });
 
-gulp.task('img', function () {
+gulp.task('img', function (done) {
     // todo : clean
     gulp.src('src/img/**/*.*')
         .pipe(gulp.dest('src/public/images'));
+    done();
 });
 
-gulp.task('release', function () {
+gulp.task('release', function (done) {
     // todo : clean build
     console.log('not implemented');
+    done();
 });
 
-gulp.task('clean', function () {
+gulp.task('clean', function (done) {
     del('dest/**/*');
+    done();
 });
 
-gulp.task('build', ['js', 'css', 'img'], function () {
+gulp.task('build', gulp.series(gulp.parallel('js', 'css', 'img'), function (done) {
     gulp.src('src/public/javascripts/*.js')
         .pipe(uglify())
         .pipe(gulp.dest('dest/public/javascripts'));
@@ -54,17 +59,19 @@ gulp.task('build', ['js', 'css', 'img'], function () {
 
     gulp.src('src/log/.gitkeep')
         .pipe(gulp.dest('dest/log'));
-});
+
+    done();
+}));
 
 gulp.task('watch', function () {
     browserSync.init({
         proxy: 'localhost:3004'
     });
 
-    gulp.watch('src/js/**/*.js', ['js', browserSync.reload]);
-    gulp.watch('src/css/**/*.css', ['css', browserSync.reload]);
-    gulp.watch('src/img/**/*.*', ['img', browserSync.reload]);
+    gulp.watch('src/js/**/*.js', gulp.series('js', browserSync.reload));
+    gulp.watch('src/css/**/*.css', gulp.series('css', browserSync.reload));
+    gulp.watch('src/img/**/*.*', gulp.series('img', browserSync.reload));
     gulp.watch('src/views/*.pug', browserSync.reload);
 });
 
-gulp.task('default', ['watch']);
+gulp.task('default', gulp.series('watch'));

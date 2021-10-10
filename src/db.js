@@ -14,7 +14,11 @@
     });
     mongoose.model('ImageData', ImageDataSchema);
 
-    mongoose.connect('mongodb://localhost/text2image');
+    mongoose.connect('mongodb://localhost/text2image', {
+        useCreateIndex: true,
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
 
     exports.ImageData = mongoose.model('ImageData');
 })();
