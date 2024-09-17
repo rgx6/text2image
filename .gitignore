@@ -1,6 +1,2 @@
-node_modules
-*/log/*
-**/log/*.png
-**/log/thumb/*.png
-*~
-*#
+node_modules/
+dist/

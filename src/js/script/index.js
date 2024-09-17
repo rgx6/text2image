@@ -1,17 +1,6 @@
 (function () {
     // 'use strict';
 
-    var imageDataUrlBase = location.protocol + '//' + location.host + '/i/{fileName}';
-
-    var tweetUrlBase = 'https://twitter.com/intent/tweet'
-            + '?lang=ja'
-            + '&text={picUrl}+{imageDataUrl}';
-
-    var THUMBNAIL_SOURCE_WIDTH = 200;
-    var THUMBNAIL_SOURCE_HEIGHT = 200;
-    var THUMBNAIL_WIDTH = 100;
-    var THUMBNAIL_HEIGHT = 100;
-
     var CANVAS_MARGIN = 20;
 
     var FONT_SIZE_MIN = 1;
@@ -31,7 +20,6 @@
 
     var lines = [];
     var font = '';
-    var tweetUrl = '';
 
     var fontlist = [
         {
@@ -105,7 +93,7 @@
     var backgroundList = [
         null,
         {
-            src: '/images/background_01.jpg',
+            src: './img/background_01.jpg',
             width: 718,
             height: 375,
             x: 382,
@@ -156,7 +144,6 @@
         // console.log('#fontfamily change');
 
         setFont();
-        disableTweetButton();
     });
 
     $('#fontfamily').on('click', '#addFont option', function (e) {
@@ -171,14 +158,12 @@
 
         $('#fontsizebadge').text(e.value + 'px');
         setFont();
-        disableTweetButton();
     }).on('slideStop', function (e) {
         'use strict';
         // console.log('#fontsize slideStop');
 
         $('#fontsizebadge').text(e.value + 'px');
         setFont();
-        disableTweetButton();
     });
 
     $('#text').on('keydown', function (e) {
@@ -213,13 +198,6 @@
         $('#text').val($('#text').val().replace(/\s+$/, ''));
     });
 
-    $('#text').on('change', function () {
-        'use strict';
-        // console.log('#text change');
-
-        disableTweetButton();
-    });
-
     $('input[name="tab"]').on('change', function () {
         'use strict';
         // console.log('input[name="tab"] change');
@@ -251,7 +229,6 @@
         localStorage.setItem('additionalFontList', JSON.stringify(additionalFontList));
 
         setFont();
-        disableTweetButton();
     });
 
     $('#fontfamily').on('click', '#deleteFont', function () {
@@ -267,14 +244,11 @@
         localStorage.setItem('additionalFontList', JSON.stringify(additionalFontList));
 
         setFont();
-        disableTweetButton();
     });
 
     $('#preview').on('click', function () {
         'use strict';
         // console.log('#preview click');
-
-        disableTweetButton();
 
         startBlockUI();
 
@@ -330,60 +304,6 @@
         } else {
             drawText(lineHeight, CANVAS_MARGIN, CANVAS_MARGIN);
         }
-    });
-
-    $('#tweetUpper, #tweetLower').on('click', function () {
-        'use strict';
-        // console.log('#tweetUpper/Lower click');
-
-        if (isTweetUrlAvailable()) {
-            window.open(tweetUrl);
-            return;
-        }
-
-        startBlockUI();
-
-        var png = canvas.toDataURL('image/png').split(',')[1];
-        var thumbPng = getThumbnailPng();
-        var text = lines.join('\n');
-
-        $.ajax({
-            type:        'POST',
-            url:         '/i',
-            contentType: 'application/json',
-            data:        JSON.stringify({ png: png, thumbPng: thumbPng, text: text }),
-            dataType:    'json',
-            cache:       false,
-            timeout:     30 * 1000,
-            success: function (data) {
-                var imageDataUrl = imageDataUrlBase.replace('{fileName}', data.fileName);
-                tweetUrl = tweetUrlBase
-                        .replace('{picUrl}', data.picUrl)
-                        .replace('{imageDataUrl}', encodeURIComponent(imageDataUrl));
-                window.open(tweetUrl);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                var res = parseJson(XMLHttpRequest.responseText);
-                if (res && res.errorCode) {
-                    if (res.errorCode === 324) {
-                        alert('エラーが発生しました。\n\n'
-                              + '画像のサイズが大きすぎるかもしれません。\n'
-                              + 'テキストを減らすか、フォントを小さくしてみてください。');
-                    } else {
-                        alert('エラーが発生しました。\n\n'
-                              + 'error code : ' + res.errorCode);
-                    }
-                } else if (textStatus === 'timeout') {
-                    alert('タイムアウトしました。');
-                } else {
-                    alert('エラーが発生しました。\n\n'
-                          + '少し待ってからもう1度試してみてください。');
-                }
-            },
-            complete: function () {
-                $.unblockUI();
-            }
-        });
     });
 
 
@@ -460,75 +380,14 @@
             context.fillText(lines[j], offsetX + 0, offsetY + j * lineHeight);
         }
 
-        if (0 < lines.length) {
-            enableTweetButton();
-            $('html, body').animate({ scrollTop: $('#tweetUpper').offset().top });
-        }
-
         $.unblockUI();
-    }
-
-    function getThumbnailPng () {
-        'use strict';
-        // console.log('getThumbnailPng');
-
-        var thumbnailCanvas = document.createElement('canvas');
-        thumbnailCanvas.width = THUMBNAIL_WIDTH;
-        thumbnailCanvas.height = THUMBNAIL_HEIGHT;
-        var thumbnailContext = thumbnailCanvas.getContext('2d');
-        thumbnailContext.fillStyle = '#fff';
-        thumbnailContext.fillRect(0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
-        thumbnailContext.scale(0.5, 0.5);
-        thumbnailContext.drawImage(canvas, -CANVAS_MARGIN, -CANVAS_MARGIN);
-
-        var dataUrl = thumbnailCanvas.toDataURL('image/png');
-        return dataUrl.split(',')[1];
-    }
-
-    function enableTweetButton () {
-        'use strict';
-        // console.log('enableTweetButton');
-
-        $('#tweetUpper').removeAttr('disabled');
-        $('#tweetLower').removeAttr('disabled');
-    }
-
-    function disableTweetButton () {
-        'use strict';
-        // console.log('disableTweetButton');
-
-        $('#tweetUpper').attr('disabled', 'disabled');
-        $('#tweetLower').attr('disabled', 'disabled');
-        tweetUrl = '';
-    }
-
-    function isTweetUrlAvailable () {
-        'use strict';
-        // console.log('isTweetURLAvailable');
-
-        return tweetUrl !== '';
     }
 
     function startBlockUI () {
         'use strict';
         // console.log('startBlockUI');
 
-        $.blockUI({ message: '<h3><img src="/images/spinner.gif" />  処理中</h3>' });
-    }
-
-    function parseJson (data) {
-        'use strict';
-        // console.log('parseJson');
-
-        var json = null;
-
-        try {
-            json = JSON.parse(data);
-        } catch (e) {
-            // do nothing
-        }
-
-        return json;
+        $.blockUI({ message: '<h3><img src="./img/spinner.gif" />  処理中</h3>' });
     }
 
     // for IE

@@ -2,25 +2,19 @@
   "name": "text2image",
   "version": "0.0.1",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "compression": "^1.7.4",
-    "errorhandler": "^1.5.1",
-    "es6-promise": "^3.0.2",
-    "express": "~4.17.1",
-    "log4js": "~0.6.21",
-    "mongoose": "^5.13.9",
-    "pug": "^3.0.2",
-    "twit": "^1.1.20"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "browser-sync": "^2.12.8",
     "del": "^6.0.0",
-    "gulp": "^4.0.2",
-    "gulp-concat": "~2.4.1",
-    "gulp-minify-css": "~0.3.11",
-    "gulp-uglify": "^1.5.4"
+    "gulp": "^5.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-line-ending-corrector": "^1.0.3",
+    "gulp-pug": "^5.0.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^2.0.1",
+    "pug": "^3.0.1",
+    "pug-cli": "^1.0.0-alpha6"
   }
 }
